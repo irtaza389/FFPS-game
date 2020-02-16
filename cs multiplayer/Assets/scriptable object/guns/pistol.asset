@@ -19,3 +19,7 @@ MonoBehaviour:
   bloom: 20
   recoil: 10
   kickback: 0.1
+  damage: 50
+  ammo: 50
+  magsize: 10
+  ReloadTime: 2

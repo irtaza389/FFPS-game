@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Photon.Pun;
 
 public class Weapon: MonoBehaviourPunCallbacks 
@@ -14,9 +15,14 @@ public class Weapon: MonoBehaviourPunCallbacks
     public GameObject bulletholePrefab;
     public LayerMask canbeShoot;
     private float coolDown;
+    private bool IsReloading;
+   
+    
+    
     void Start()
     {
-        
+        foreach (gun a in loadout) a.Initalize();
+        Equip(0);
     }
 
     // Update is called once per frame
@@ -39,11 +45,25 @@ public class Weapon: MonoBehaviourPunCallbacks
 
                     if (Input.GetMouseButton(1))
                         Aim(true);
+                if (Input.GetMouseButtonUp(1))
+                    Aim(false);
 
-                    if (Input.GetMouseButton(0) && coolDown < 0)
+                    if (Input.GetMouseButton(0) && coolDown < 0 )
                     {
+                    if (loadout[currentIndex].FireBullet())
+                    {
+
                         photonView.RPC("shoot", RpcTarget.All);
                     }
+                    else
+                    {
+                        StartCoroutine(Reload(loadout[currentIndex].ReloadTime));
+                    }
+                    }
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    StartCoroutine(Reload(loadout[currentIndex].ReloadTime));
+                }
                     //cooldown
                     if (coolDown > 0)
                     {
@@ -57,6 +77,18 @@ public class Weapon: MonoBehaviourPunCallbacks
                 }
 
             }
+
+    IEnumerator Reload( float p_wait)
+    {
+        IsReloading = true;
+        currentWeapon.SetActive(false);
+        yield return new WaitForSeconds(p_wait);
+        loadout[currentIndex].Reload();
+        currentWeapon.SetActive(false);
+        IsReloading = false;
+
+    }
+
         
     
     [PunRPC]
@@ -64,8 +96,12 @@ public class Weapon: MonoBehaviourPunCallbacks
     {
 
         if (currentWeapon != null)
+        { 
+            Destroy(currentWeapon); ;
+        }
+        if (IsReloading)
         {
-            Destroy(currentWeapon);
+            StopCoroutine("Reload");
         }
         currentIndex = w_id;
         GameObject t_newequip = Instantiate(loadout[w_id].prefab, weaponParent.localPosition, weaponParent.rotation, weaponParent) as GameObject;
@@ -91,6 +127,17 @@ public class Weapon: MonoBehaviourPunCallbacks
         }
 
     }
+
+    public void RefreshAMoo( Text t_text)
+    {
+        int t_clip = loadout[currentIndex].GetClip();
+        int t_stach = loadout[currentIndex].GetStach();
+        t_text.text = t_clip.ToString("D2") + " / " + t_stach.ToString("D2");
+
+
+    }
+
+
 
 
     [PunRPC]
@@ -143,6 +190,7 @@ public class Weapon: MonoBehaviourPunCallbacks
         GetComponent<Player>().TakeDamage(p_damage);
     }
      
+
 
 }
 

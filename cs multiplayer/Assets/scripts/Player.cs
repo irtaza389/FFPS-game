@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Photon.Pun;
 
 public class Player : MonoBehaviourPunCallbacks
@@ -16,17 +17,21 @@ public class Player : MonoBehaviourPunCallbacks
 
 
     private Transform ui_Healhtbar;
+    private Text ui_Ammo;
+
     public Camera normlecam;
     private float Basefov;
     private Rigidbody rig;
     private float sprintModifier = 2f;
     private int currentHealth;
     private GameManager manager;
+    private Weapon weapon;
     
     void Start()
     {
         manager = GameObject.Find("Manager").GetComponent<GameManager>();
         currentHealth = maxHealth;
+        weapon = GetComponent<Weapon>();
         cameraparent.SetActive(photonView.IsMine);
         if (!photonView.IsMine)
         {
@@ -37,7 +42,10 @@ public class Player : MonoBehaviourPunCallbacks
         if (photonView.IsMine)
         {
             ui_Healhtbar = GameObject.Find("HUD/Health/healthBar").transform;
+            ui_Ammo = GameObject.Find("HUD/ammo/Text").GetComponent<Text>();
             RefreshHealthBar();
+            weapon.RefreshAMoo(ui_Ammo);
+
         }
     }
 
