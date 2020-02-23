@@ -12,7 +12,7 @@ public class Player : MonoBehaviourPunCallbacks
     public Transform weaponparent;
     public LayerMask Ground;
     public GameObject cameraparent;
-    public float jumpForce= 1000f;
+    public float jumpForce;
     public int maxHealth;
 
 
@@ -61,11 +61,14 @@ public class Player : MonoBehaviourPunCallbacks
 
             bool sprint = Input.GetKey(KeyCode.LeftShift);
             bool jump = Input.GetKeyDown(KeyCode.Space);
+        bool slide = Input.GetKeyDown(KeyCode.C);
+        
 
             //states
             bool IsGrounded = Physics.Raycast(groundDetector.position, Vector3.down, 0.1f, Ground);
             bool Isjumping = jump && IsGrounded;
             bool isSprinting = sprint && t_vmove > 0 && !Isjumping && IsGrounded;
+
 
 
             //jumping

@@ -25,13 +25,12 @@ public class Look : MonoBehaviourPunCallbacks
     void Update()
     {
         if (!photonView.IsMine) return;
-        else
-        {
+        
 
             setY();
             setX();
             UpdatecusorLock();
-        }
+        
     }
     #endregion
 
